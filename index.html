@@ -68,18 +68,21 @@
     // Replace with your Google Apps Script Web App URL after deployment
     const TRACKING_URL = 'https://script.google.com/macros/s/AKfycby6mUhzvl39taOBV0qRTroyyo6JSjSK1P0dQDYYTfmEe4SWiJMFbmPKPs0SKdPbLgdSaQ/exec';
 
-    function sendOpenEvent(){
-      try{
-        if(!TRACKING_URL || TRACKING_URL.includes('YOUR_SCRIPT_ID')) return;
-        const payload = JSON.stringify({event:'open',ts:new Date().toISOString(),url:location.href,userAgent:navigator.userAgent});
-        if(navigator.sendBeacon){
-          const blob = new Blob([payload],{type:'application/json'});
-          navigator.sendBeacon(TRACKING_URL,blob);
-        }else{
-          fetch(TRACKING_URL,{method:'POST',body:payload,headers:{'Content-Type':'application/json'}}).catch(()=>{});
-        }
-      }catch(e){console.warn(e)}
-    }
+   function sendOpenEvent(){
+  try{
+    const payload = JSON.stringify({
+      event:'open',
+      ts:new Date().toISOString(),
+      url:location.href,
+      userAgent:navigator.userAgent
+    });
+
+    const blob = new Blob([payload], {type:'text/plain'});
+    navigator.sendBeacon(TRACKING_URL, blob);
+
+  }catch(e){console.warn(e)}
+}
+
 
     function tinyConfetti(){
       const count = 18;
@@ -107,7 +110,7 @@
 
     document.getElementById('smileBtn').addEventListener('click',()=>{
       tinyConfetti();
-      alert('You just sent a smile 💛');
+      alert('See You are Smiling ,You just sent a smile 💛');
     });
     document.getElementById('shareBtn').addEventListener('click',async()=>{
       const shareData={title:document.title,text:'Hey there 🌞 — here’s a smile for you!',url:location.href};
