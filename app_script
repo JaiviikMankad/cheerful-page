@@ -1,0 +1,39 @@
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function doGet(e) {
+  return handleRequest(e);
+}
+
+function doOptions(e) {
+  return createCorsResponse();
+}
+
+function handleRequest(e) {
+  const sheet = SpreadsheetApp.openById("1c1EKSvwFwPWCo59HttUyQv-xhsseFNq8gzLe8CCykOU")
+                .getSheetByName("Sheet1");
+  try {
+    const data = JSON.parse(e.postData ? e.postData.contents : "{}");
+    sheet.appendRow([
+      new Date(),
+      data.event || "open",
+      data.url || "",
+      data.userAgent || ""
+    ]);
+    return createCorsResponse({ status: "success" });
+  } catch (err) {
+    return createCorsResponse({ status: "error", message: err.toString() });
+  }
+}
+
+function createCorsResponse(obj) {
+  const output = ContentService.createTextOutput(
+    JSON.stringify(obj || { ok: true })
+  );
+  output.setMimeType(ContentService.MimeType.JSON);
+  return output
+    .setHeader("Access-Control-Allow-Origin", "*")
+    .setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    .setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
